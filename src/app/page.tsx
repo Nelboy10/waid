@@ -29,12 +29,24 @@ export default function Home() {
       setScrollY(window.scrollY);
     };
 
+    const handleResize = () => {
+      if (canvasRef.current) {
+        canvasRef.current.width = window.innerWidth;
+        canvasRef.current.height = window.innerHeight;
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleResize);
+    
+    // Initial resize
+    handleResize();
     
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -46,13 +58,11 @@ export default function Home() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
     // Créer des particules
     const createParticles = () => {
       particlesRef.current = [];
-      for (let i = 0; i < 150; i++) {
+      const particleCount = window.innerWidth < 768 ? 80 : 150;
+      for (let i = 0; i < particleCount; i++) {
         particlesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
@@ -192,7 +202,7 @@ export default function Home() {
       {/* Feux d'artifice avancés */}
       {showFireworks && (
         <div className="fixed inset-0 pointer-events-none z-30">
-          {[...Array(20)].map((_, i) => (
+          {[...Array(window.innerWidth < 768 ? 10 : 20)].map((_, i) => (
             <div
               key={i}
               className="absolute animate-firework-advanced"
@@ -203,13 +213,13 @@ export default function Home() {
                 animationDuration: `${2 + Math.random()}s`
               }}
             >
-              <div className="w-4 h-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 rounded-full shadow-lg" />
+              <div className="w-2 h-2 md:w-4 md:h-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 rounded-full shadow-lg" />
               {[...Array(8)].map((_, j) => (
                 <div
                   key={j}
-                  className="absolute w-2 h-2 bg-gradient-to-r from-yellow-300 to-orange-400 rounded-full animate-spark"
+                  className="absolute w-1 h-1 md:w-2 md:h-2 bg-gradient-to-r from-yellow-300 to-orange-400 rounded-full animate-spark"
                   style={{
-                    transform: `rotate(${j * 45}deg) translateY(-20px)`,
+                    transform: `rotate(${j * 45}deg) translateY(-${window.innerWidth < 768 ? 10 : 20}px)`,
                     animationDelay: `${0.5 + j * 0.1}s`
                   }}
                 />
@@ -220,13 +230,13 @@ export default function Home() {
       )}
 
       {/* Contenu principal */}
-      <div className="relative z-20 min-h-screen flex flex-col items-center justify-center text-white px-6 py-12">
-        <div className="text-center max-w-6xl">
+      <div className="relative z-20 min-h-screen flex flex-col items-center justify-center text-white px-4 sm:px-6 py-12">
+        <div className="text-center max-w-6xl w-full px-4">
           {/* Titre avec effets avancés */}
-          <div className="mb-16 relative">
+          <div className="mb-8 sm:mb-16 relative">
             <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-orange-500/20 to-red-500/20 blur-3xl animate-pulse-glow -z-10" />
             
-            <h1 className="text-8xl md:text-9xl lg:text-[12rem] font-black mb-8 leading-none relative">
+            <h1 className="text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] xl:text-[12rem] font-black mb-6 sm:mb-8 leading-none relative">
               <span className="absolute inset-0 bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 animate-gradient-flow">
                 WAÏD
               </span>
@@ -236,26 +246,26 @@ export default function Home() {
             </h1>
             
             {/* Sous-titre dynamique */}
-            <div className="text-3xl md:text-5xl font-bold text-yellow-400 mb-4 relative">
+            <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-yellow-400 mb-2 sm:mb-4 relative">
               <div className="absolute inset-0 bg-yellow-400/20 blur-2xl animate-pulse-slow" />
-              <div className="relative flex items-center justify-center gap-6">
-                <span className="inline-block animate-spin-3d text-6xl">🎂</span>
-                <span className="tracking-[0.3em] animate-text-glow">JOYEUX ANNIVERSAIRE</span>
-                <span className="inline-block animate-spin-3d-reverse text-6xl">🎉</span>
+              <div className="relative flex items-center justify-center gap-2 sm:gap-4 md:gap-6">
+                <span className="inline-block animate-spin-3d text-4xl sm:text-5xl md:text-6xl">🎂</span>
+                <span className="tracking-[0.1em] sm:tracking-[0.2em] md:tracking-[0.3em] animate-text-glow">JOYEUX ANNIVERSAIRE</span>
+                <span className="inline-block animate-spin-3d-reverse text-4xl sm:text-5xl md:text-6xl">🎉</span>
               </div>
             </div>
             
             {/* Ligne de séparation animée */}
-            <div className="w-96 h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto animate-expand-contract" />
+            <div className="w-48 sm:w-64 md:w-80 lg:w-96 h-0.5 sm:h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto animate-expand-contract" />
           </div>
 
           {/* Message avec typographie avancée */}
-          <div className="text-xl md:text-2xl lg:text-3xl mb-16 leading-relaxed space-y-6">
+          <div className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl mb-8 sm:mb-12 md:mb-16 leading-relaxed space-y-4 sm:space-y-6">
             <p className="animate-text-reveal delay-1000 opacity-0">
               En ce jour <span className="text-yellow-400 font-bold animate-text-glow">extraordinaire</span>, 
               je te souhaite une vie remplie de
             </p>
-            <div className="flex flex-wrap justify-center gap-4 text-2xl md:text-3xl font-bold">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 text-xl sm:text-2xl md:text-3xl font-bold">
               <span className="animate-text-reveal delay-1300 opacity-0 bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
                 RÉUSSITE
               </span>
@@ -269,19 +279,19 @@ export default function Home() {
             <p className="animate-text-reveal delay-2000 opacity-0">
               Tu es une source d'<span className="text-yellow-400 font-bold animate-text-glow">inspiration</span> 
               et un vrai <span className="text-orange-400 font-bold animate-text-glow">frère</span> 
-              <span className="text-3xl animate-bounce-gentle">💪🏼</span>
+              <span className="text-2xl sm:text-3xl animate-bounce-gentle">💪🏼</span>
             </p>
-            <p className="animate-text-reveal delay-2300 opacity-0 text-yellow-400 font-bold text-2xl md:text-3xl">
+            <p className="animate-text-reveal delay-2300 opacity-0 text-yellow-400 font-bold text-xl sm:text-2xl md:text-3xl">
               Que cette nouvelle année t'apporte tout ce que tu mérites
-              <span className="text-4xl animate-sparkle ml-2">✨</span>
+              <span className="text-3xl sm:text-4xl animate-sparkle ml-1 sm:ml-2">✨</span>
             </p>
           </div>
 
           {/* Photo avec effets ultra-avancés */}
-          <div className="relative w-80 h-80 md:w-96 md:h-96 lg:w-[30rem] lg:h-[30rem] mx-auto mb-16 group">
+          <div className="relative w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 xl:w-[30rem] xl:h-[30rem] mx-auto mb-8 sm:mb-12 md:mb-16 group">
             {/* Cadre holographique */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-400 via-orange-500 via-red-500 via-purple-500 to-blue-500 animate-rainbow-spin p-2">
-              <div className="w-full h-full rounded-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-3 relative overflow-hidden">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-400 via-orange-500 via-red-500 via-purple-500 to-blue-500 animate-rainbow-spin p-1 sm:p-2">
+              <div className="w-full h-full rounded-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-2 sm:p-3 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-transparent to-blue-400/20 animate-shimmer-fast" />
                 <div className="relative w-full h-full rounded-full overflow-hidden">
                   <Image
@@ -290,6 +300,7 @@ export default function Home() {
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-1000"
                     priority
+                    sizes="(max-width: 640px) 192px, (max-width: 768px) 256px, (max-width: 1024px) 320px, (max-width: 1280px) 384px, 480px"
                   />
                   <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent animate-diamond-shine" />
                 </div>
@@ -297,49 +308,49 @@ export default function Home() {
             </div>
             
             {/* Particules orbitales avancées */}
-            <div className="absolute -top-12 -left-12 text-6xl animate-orbit-complex">👑</div>
-            <div className="absolute -top-12 -right-12 text-5xl animate-orbit-complex-reverse">💎</div>
-            <div className="absolute -bottom-12 -left-12 text-5xl animate-orbit-complex-slow">🔥</div>
-            <div className="absolute -bottom-12 -right-12 text-6xl animate-orbit-complex-reverse-slow">⚡</div>
+            <div className="absolute -top-6 -left-6 sm:-top-8 sm:-left-8 md:-top-10 md:-left-10 lg:-top-12 lg:-left-12 text-3xl sm:text-4xl md:text-5xl lg:text-6xl animate-orbit-complex">👑</div>
+            <div className="absolute -top-6 -right-6 sm:-top-8 sm:-right-8 md:-top-10 md:-right-10 lg:-top-12 lg:-right-12 text-2xl sm:text-3xl md:text-4xl lg:text-5xl animate-orbit-complex-reverse">💎</div>
+            <div className="absolute -bottom-6 -left-6 sm:-bottom-8 sm:-left-8 md:-bottom-10 md:-left-10 lg:-bottom-12 lg:-left-12 text-2xl sm:text-3xl md:text-4xl lg:text-5xl animate-orbit-complex-slow">🔥</div>
+            <div className="absolute -bottom-6 -right-6 sm:-bottom-8 sm:-right-8 md:-bottom-10 md:-right-10 lg:-bottom-12 lg:-right-12 text-3xl sm:text-4xl md:text-5xl lg:text-6xl animate-orbit-complex-reverse-slow">⚡</div>
             
             {/* Halo lumineux */}
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-400/10 via-orange-500/10 to-red-500/10 animate-pulse-glow scale-150 blur-xl" />
           </div>
 
           {/* Signature royale */}
-          <div className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8 animate-text-reveal delay-2500 opacity-0">
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <span className="text-6xl animate-float-gentle">👑</span>
+          <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-4 sm:mb-6 md:mb-8 animate-text-reveal delay-2500 opacity-0">
+            <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 mb-2 sm:mb-3 md:mb-4">
+              <span className="text-4xl sm:text-5xl md:text-6xl animate-float-gentle">👑</span>
               <span className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent tracking-wider">
                 AVEC TOUT MON RESPECT
               </span>
-              <span className="text-6xl animate-float-gentle-reverse">👑</span>
+              <span className="text-4xl sm:text-5xl md:text-6xl animate-float-gentle-reverse">👑</span>
             </div>
-            <div className="text-2xl md:text-3xl text-white">
-              – <span className="text-yellow-400 font-black text-4xl md:text-5xl animate-text-glow">NEL</span> 
-              <span className="text-5xl animate-bounce-gentle ml-2">🏆</span>
+            <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white">
+              – <span className="text-yellow-400 font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl animate-text-glow">NEL</span> 
+              <span className="text-3xl sm:text-4xl md:text-5xl animate-bounce-gentle ml-1 sm:ml-2">🏆</span>
             </div>
           </div>
 
           {/* Bouton feux d'artifice ultra-premium */}
           <button
             onClick={triggerFireworks}
-            className="group relative px-16 py-8 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-black font-black text-xl md:text-2xl rounded-full shadow-2xl hover:shadow-yellow-400/50 transform hover:scale-110 transition-all duration-500 overflow-hidden animate-text-reveal delay-3000 opacity-0"
+            className="group relative px-8 py-4 sm:px-12 sm:py-6 md:px-16 md:py-8 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-black font-black text-base sm:text-lg md:text-xl lg:text-2xl rounded-full shadow-2xl hover:shadow-yellow-400/50 transform hover:scale-110 transition-all duration-500 overflow-hidden animate-text-reveal delay-3000 opacity-0"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="absolute inset-0 bg-white/20 group-hover:animate-pulse" />
-            <div className="relative flex items-center gap-6">
-              <span className="text-4xl animate-spin-3d">🎆</span>
+            <div className="relative flex items-center gap-2 sm:gap-4 md:gap-6">
+              <span className="text-2xl sm:text-3xl md:text-4xl animate-spin-3d">🎆</span>
               <span className="tracking-wider">DÉCLENCHER LA MAGIE</span>
-              <span className="text-4xl animate-spin-3d-reverse">🎆</span>
+              <span className="text-2xl sm:text-3xl md:text-4xl animate-spin-3d-reverse">🎆</span>
             </div>
           </button>
         </div>
       </div>
 
       {/* Footer premium */}
-      <footer className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 animate-text-reveal delay-3500 opacity-0">
-        <div className="flex items-center gap-3 text-sm md:text-base">
+      <footer className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 text-gray-400 animate-text-reveal delay-3500 opacity-0">
+        <div className="flex items-center gap-1 sm:gap-2 md:gap-3 text-xs sm:text-sm md:text-base">
           <span className="text-yellow-400 animate-sparkle">✨</span>
           <span className="tracking-wider">© {new Date().getFullYear()} JOYEUX ANNIVERSAIRE PREMIUM</span>
           <span className="text-yellow-400 animate-sparkle">✨</span>
@@ -347,7 +358,7 @@ export default function Home() {
       </footer>
 
       {/* Styles CSS ultra-avancés */}
-      <style jsx>{`
+      <style jsx global>{`
         @keyframes gradient-shift {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
@@ -409,31 +420,31 @@ export default function Home() {
         }
         
         @keyframes orbit-complex {
-          0% { transform: rotate(0deg) translateX(120px) rotate(0deg) scale(1); }
-          25% { transform: rotate(90deg) translateX(120px) rotate(-90deg) scale(1.2); }
-          50% { transform: rotate(180deg) translateX(120px) rotate(-180deg) scale(1); }
-          75% { transform: rotate(270deg) translateX(120px) rotate(-270deg) scale(1.2); }
-          100% { transform: rotate(360deg) translateX(120px) rotate(-360deg) scale(1); }
+          0% { transform: rotate(0deg) translateX(80px) rotate(0deg) scale(1); }
+          25% { transform: rotate(90deg) translateX(80px) rotate(-90deg) scale(1.2); }
+          50% { transform: rotate(180deg) translateX(80px) rotate(-180deg) scale(1); }
+          75% { transform: rotate(270deg) translateX(80px) rotate(-270deg) scale(1.2); }
+          100% { transform: rotate(360deg) translateX(80px) rotate(-360deg) scale(1); }
         }
         
         @keyframes orbit-complex-reverse {
-          0% { transform: rotate(360deg) translateX(120px) rotate(360deg) scale(1); }
-          25% { transform: rotate(270deg) translateX(120px) rotate(270deg) scale(1.2); }
-          50% { transform: rotate(180deg) translateX(120px) rotate(180deg) scale(1); }
-          75% { transform: rotate(90deg) translateX(120px) rotate(90deg) scale(1.2); }
-          100% { transform: rotate(0deg) translateX(120px) rotate(0deg) scale(1); }
+          0% { transform: rotate(360deg) translateX(80px) rotate(360deg) scale(1); }
+          25% { transform: rotate(270deg) translateX(80px) rotate(270deg) scale(1.2); }
+          50% { transform: rotate(180deg) translateX(80px) rotate(180deg) scale(1); }
+          75% { transform: rotate(90deg) translateX(80px) rotate(90deg) scale(1.2); }
+          100% { transform: rotate(0deg) translateX(80px) rotate(0deg) scale(1); }
         }
         
         @keyframes orbit-complex-slow {
-          0% { transform: rotate(0deg) translateX(100px) rotate(0deg) scale(1); }
-          50% { transform: rotate(180deg) translateX(100px) rotate(-180deg) scale(1.3); }
-          100% { transform: rotate(360deg) translateX(100px) rotate(-360deg) scale(1); }
+          0% { transform: rotate(0deg) translateX(60px) rotate(0deg) scale(1); }
+          50% { transform: rotate(180deg) translateX(60px) rotate(-180deg) scale(1.3); }
+          100% { transform: rotate(360deg) translateX(60px) rotate(-360deg) scale(1); }
         }
         
         @keyframes orbit-complex-reverse-slow {
-          0% { transform: rotate(360deg) translateX(100px) rotate(360deg) scale(1); }
-          50% { transform: rotate(180deg) translateX(100px) rotate(180deg) scale(1.3); }
-          100% { transform: rotate(0deg) translateX(100px) rotate(0deg) scale(1); }
+          0% { transform: rotate(360deg) translateX(60px) rotate(360deg) scale(1); }
+          50% { transform: rotate(180deg) translateX(60px) rotate(180deg) scale(1.3); }
+          100% { transform: rotate(0deg) translateX(60px) rotate(0deg) scale(1); }
         }
         
         @keyframes firework-advanced {
@@ -444,18 +455,18 @@ export default function Home() {
         
         @keyframes spark {
           0% { transform: scale(0) translateY(0); opacity: 1; }
-          50% { transform: scale(1) translateY(-40px); opacity: 0.8; }
-          100% { transform: scale(0) translateY(-80px); opacity: 0; }
+          50% { transform: scale(1) translateY(-20px); opacity: 0.8; }
+          100% { transform: scale(0) translateY(-40px); opacity: 0; }
         }
         
         @keyframes float-gentle {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-15px) rotate(5deg); }
+          50% { transform: translateY(-10px) rotate(5deg); }
         }
         
         @keyframes float-gentle-reverse {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-15px) rotate(-5deg); }
+          50% { transform: translateY(-10px) rotate(-5deg); }
         }
         
         @keyframes expand-contract {
@@ -470,7 +481,7 @@ export default function Home() {
         
         @keyframes bounce-gentle {
           0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
+          50% { transform: translateY(-8px); }
         }
         
         @keyframes pulse-slow {
@@ -577,6 +588,20 @@ export default function Home() {
         .delay-2500 { animation-delay: 2.5s; }
         .delay-3000 { animation-delay: 3s; }
         .delay-3500 { animation-delay: 3.5s; }
+
+        @media (max-width: 640px) {
+          .animate-orbit-complex,
+          .animate-orbit-complex-reverse {
+            animation: orbit-complex 12s linear infinite;
+            transform-origin: center;
+          }
+          
+          .animate-orbit-complex-slow,
+          .animate-orbit-complex-reverse-slow {
+            animation: orbit-complex-slow 15s linear infinite;
+            transform-origin: center;
+          }
+        }
       `}</style>
     </main>
   );
